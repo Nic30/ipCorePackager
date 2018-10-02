@@ -172,7 +172,7 @@ class IpCorePackager(object):
 
     def getInterfacePhysicalName(self, intf: "Interface"):
             raise NotImplementedError(
-                "Implement this method in your IntfConfig class")
+                "Implement this method in your Interface class")
 
     def getInterfaceLogicalName(self, intf: "Interface"):
         raise NotImplementedError(
@@ -189,7 +189,7 @@ class IpCorePackager(object):
 
     def getInterfaceDirection(self, thisIntf: "Interface") -> INTF_DIRECTION:
         raise NotImplementedError(
-            "Implement this method in your IntfConfig class")
+            "Implement this method in your Interface class")
 
     def getTypeWidth(self, dtype: "HdlType", do_eval=False) -> Tuple[int, str, bool]:
         """
@@ -199,7 +199,7 @@ class IpCorePackager(object):
             or can be changed by parameter)
         """
         raise NotImplementedError(
-            "Implement this method in your IntfConfig class")
+            "Implement this method in your HdlType classes")
 
     def getObjDebugName(self, obj: Union["Interface", "Unit", "Param"]) -> str:
         """

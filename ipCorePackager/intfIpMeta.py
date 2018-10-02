@@ -5,7 +5,7 @@ from ipCorePackager.otherXmlObjs import Parameter
 from ipCorePackager.type import Type
 
 
-class IpConfigNotSpecified(Exception):
+class IntfIpMetaNotSpecified(Exception):
     """
     This error means that you need to implement this function
     to use this functionality
@@ -16,7 +16,7 @@ class IpConfigNotSpecified(Exception):
     pass
 
 
-class IntfConfig(Type):
+class IntfIpMeta(Type):
 
     def __init__(self):
         self.parameters = []

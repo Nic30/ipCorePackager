@@ -6,7 +6,7 @@ from ipCorePackager.busInterface import BusInterface
 from ipCorePackager.constants import INTF_DIRECTION
 from ipCorePackager.helpers import appendSpiElem, \
     appendStrElements, mkSpiElm, ns, whereEndsWithExt, whereEndsWithExts
-from ipCorePackager.intfConfig import IpConfigNotSpecified
+from ipCorePackager.intfIpMeta import IntfIpMetaNotSpecified
 from ipCorePackager.model import Model
 from ipCorePackager.otherXmlObjs import VendorExtensions, \
     FileSet, File, Parameter, Value
@@ -184,7 +184,7 @@ class Component():
             biClass = None
             try:
                 biClass = intf._getIpCoreIntfClass()
-            except IpConfigNotSpecified:
+            except IntfIpMetaNotSpecified:
                 pass
             if biClass is not None:
                 bi = BusInterface.fromBiClass(intf, biClass, self._packager)
