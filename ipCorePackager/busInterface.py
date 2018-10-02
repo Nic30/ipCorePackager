@@ -38,21 +38,23 @@ class BusInterface():
     #    return self
 
     @staticmethod
-    def generatePortMap(biType, intf):
+    def generatePortMap(biType, intf, packager: "IpCorePackager"):
         def processIntf(mapDict, intf):
             if not intf._interfaces:
                 assert(isinstance(mapDict, str))
                 return {mapDict: intf._getPhysicalName()}
             else:
                 d = {}
+                logicName = packager.getInterfaceLogicalName
                 for i in intf._interfaces:
                     if i._isExtern:
+                        n = logicName(i)
                         try:
-                            m = mapDict[i._name]
+                            m = mapDict[n]
                         except KeyError:
                             raise Exception(
                                 "Interface %s has interface %s which is not defined in ipcore interface class"
-                                % (intf._getFullName(), i._name)
+                                % (packager.getObjDebugName(intf), n)
                             )
 
                         d.update(processIntf(m, i))
@@ -60,15 +62,15 @@ class BusInterface():
         return processIntf(biType.map, intf)
 
     @classmethod
-    def fromBiClass(cls, intf, biClass):
+    def fromBiClass(cls, intf, biClass, packager: "IpCorePackager"):
         self = BusInterface()
         biType = biClass()
-        self.name = intf._name
+        self.name = packager.getInterfaceLogicalName(intf)
         self.busType = biType
         self.abstractionType = biClass()
         self.abstractionType.name += "_rtl"
         self.isMaster = intf._direction == INTF_DIRECTION.MASTER
-        self._portMaps = BusInterface.generatePortMap(biType, intf)
+        self._portMaps = BusInterface.generatePortMap(biType, intf, packager)
         self.parameters = biType.parameters
         return self
 

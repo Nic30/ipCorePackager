@@ -6,13 +6,12 @@ from ipCorePackager.busInterface import BusInterface
 from ipCorePackager.constants import INTF_DIRECTION
 from ipCorePackager.helpers import appendSpiElem, \
     appendStrElements, mkSpiElm, ns, whereEndsWithExt, whereEndsWithExts
-from ipCorePackager.intfConfig import IpConfigNotSpecified
+from ipCorePackager.intfIpMeta import IntfIpMetaNotSpecified
 from ipCorePackager.model import Model
-from ipCorePackager.otherXmlObjs import VendorExtensions,\
+from ipCorePackager.otherXmlObjs import VendorExtensions, \
     FileSet, File, Parameter, Value
 from ipCorePackager.port import Port
 import xml.etree.ElementTree as etree
-
 
 vhdl_syn_fileSetName = "xilinx_vhdlsynthesis_view_fileset"
 vhdl_sim_fileSetName = "xilinx_vhdlbehavioralsimulation_view_fileset"
@@ -57,7 +56,7 @@ class Component():
     """
     Containers of informations about IP core
 
-    :attention: Xilinx xml is element position dependent
+    :attention: Xilinx IP-XACT is element position dependent
     """
     _strValues = ["vendor", "library", "name", "version", "description"]
     # _iterableValues = ["fileSets", "parameters" ]
@@ -68,7 +67,7 @@ class Component():
         self.name = ""
         self.version = "1.0"
         self.busInterfaces = []
-        self.model = Model(vhdl_syn_fileSetName,
+        self.model = Model(packager, vhdl_syn_fileSetName,
                            vhdl_sim_fileSetName, tcl_fileSetName)
         self.fileSets = []
         self.description = ""
@@ -98,6 +97,7 @@ class Component():
     #    return self
 
     def _xmlFileSets(self, componentElem):
+
         def fileSetFromFiles(name, files):
             fileSet = FileSet()
             fileSet.name = name
@@ -105,15 +105,19 @@ class Component():
                 f = File.fromFileName(fn)
                 fileSet.files.append(f)
             return fileSet
+
         filesets = appendSpiElem(componentElem, "fileSets")
         hdlExtensions = [".vhd", 'v']
 
-        hdl_fs = fileSetFromFiles(vhdl_syn_fileSetName,
-                                  whereEndsWithExts(self._files, hdlExtensions))
-        hdl_sim_fs = fileSetFromFiles(vhdl_sim_fileSetName,
-                                      whereEndsWithExts(self._files, hdlExtensions))
-        tclFileSet = fileSetFromFiles(tcl_fileSetName,
-                                      whereEndsWithExt(self._files, ".tcl"))
+        hdl_fs = fileSetFromFiles(
+            vhdl_syn_fileSetName,
+            whereEndsWithExts(self._files, hdlExtensions))
+        hdl_sim_fs = fileSetFromFiles(
+            vhdl_sim_fileSetName,
+            whereEndsWithExts(self._files, hdlExtensions))
+        tclFileSet = fileSetFromFiles(
+            tcl_fileSetName,
+            whereEndsWithExt(self._files, ".tcl"))
         for fs in [hdl_fs, hdl_sim_fs, tclFileSet]:
             filesets.append(fs.asElem())
 
@@ -122,7 +126,7 @@ class Component():
         for p in self.parameters:
             parameters.append(p.asElem())
 
-    def xml(self):
+    def ip_xact(self):
         # Vivado 2015.2 bug - order of all elements is NOT optional
         for prefix, uri in ns.items():
             etree.register_namespace(prefix, uri)
@@ -151,20 +155,26 @@ class Component():
             for i in intf._interfaces:
                 self.registerInterface(i)
         else:
-            p = Port.fromParams(intf._name,
-                                INTF_DIRECTION.asDirection(intf._direction),
-                                intf._dtype)
+            pack = self._packager
+            name = pack.getInterfaceLogicalName(intf)
+            d = pack.getInterfaceDirection(intf)
+            t = pack.getInterfaceType(intf)
+            p = Port.fromParams(name,
+                                INTF_DIRECTION.asDirection(d),
+                                t,
+                                pack)
             self.model.ports.append(p)
 
-    def asignTopUnit(self, top, topName, topInterfaces, topParams):
+    def asignTopUnit(self, top, topName):
         """
         Set hwt unit as template for component
         """
         self._top = top
         self.name = topName
-        self.model.addDefaultViews(self._top)
+        pack = self._packager
+        self.model.addDefaultViews(topName, pack.iterParams(top))
 
-        for intf in topInterfaces:
+        for intf in pack.iterInterfaces(self._top):
             self.registerInterface(intf)
             if intf._isExtern:
                 self.busInterfaces.append(intf)
@@ -174,13 +184,12 @@ class Component():
             biClass = None
             try:
                 biClass = intf._getIpCoreIntfClass()
-            except IpConfigNotSpecified:
+            except IntfIpMetaNotSpecified:
                 pass
             if biClass is not None:
-                bi = BusInterface.fromBiClass(intf, biClass)
+                bi = BusInterface.fromBiClass(intf, biClass, self._packager)
                 intf._bi = bi
-                bi.busType.postProcess(
-                    self, self._top, self.busInterfaces, intf)
+                bi.busType.postProcess(self, self._packager, intf)
 
         # generate component parameters
         compNameParam = Parameter()
@@ -192,11 +201,11 @@ class Component():
         v.text = self.name
         self.parameters.append(compNameParam)
         # generic as parameters
-        for g in topParams:
+        for _p in pack.iterParams(self._top):
             p = Parameter()
-            p.name = g.name
+            p.name = pack.getParamPhysicalName(_p)
             p.value = self._packager.paramToIpValue(
-                "PARAM_VALUE.", g, Value.RESOLVE_USER)
+                "PARAM_VALUE.", _p, Value.RESOLVE_USER)
             self.parameters.append(p)
 
         # for bi in self.busInterfaces:
@@ -208,7 +217,7 @@ class Component():
 
     def quartus_tcl(self, quartus_version=None):
         if quartus_version is None:
-            quartus_version = self.DEFAULT_QUARTUS_VERSION
+            quartus_version = DEFAULT_QUARTUS_VERSION
         buff = [
             tcl_comment("module properties"),
             "package require -exact qsys %s" % quartus_version,
@@ -249,7 +258,6 @@ class Component():
             if hasattr(intf, "_bi"):
                 bi = intf._bi
                 bi.busType.asQuartusTcl(buff, quartus_version,
-                                        self, self._top,
-                                        self.busInterfaces, intf)
+                                        self, self._packager, intf)
                 buff.append("")
         return "\n".join(buff)

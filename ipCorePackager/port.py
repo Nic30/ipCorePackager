@@ -26,7 +26,8 @@ class WireTypeDef():
 
 
 class Port():
-
+    def __init__(self, packager: "IpCorePackager"):
+        self._packager = packager
     # @classmethod
     # def fromElem(cls, elm):
     #     self = cls()
@@ -44,21 +45,21 @@ class Port():
     #     return self
 
     @staticmethod
-    def fromParams(name: str, direction: DIRECTION, dtype: "HdlType", packager: "IpPackager"):
-        port = Port()
+    def fromParams(name: str, direction: DIRECTION,
+                   dtype: "HdlType", packager: "IpPackager"):
+        port = Port(packager)
         port.name = name
         port.direction = direction.name.lower()
         port.type = WireTypeDef()
         t = port.type
-        dt = dtype
 
-        t.typeName = packager.serializeType(dt)
+        t.typeName = packager.serializeType(dtype)
         try:
             t.typeName = t.typeName[:t.typeName.index('(')]
         except ValueError:
             pass
 
-        port.vector = packager.getVectorFromType(dt)
+        port.vector = packager.getVectorFromType(dtype)
         t.viewNameRefs = ["xilinx_vhdlsynthesis",
                           "xilinx_vhdlbehavioralsimulation"]
         return port
@@ -72,24 +73,21 @@ class Port():
             v = appendSpiElem(w, "vector")
 
             def mkBoundary(name, val):
-                if isinstance(val, int):
-                    val = hInt(val)
                 d = appendSpiElem(v, name)
 
                 d.attrib["spirit:format"] = "long"
-                if isinstance(val, RtlSignalBase):
+                tclVal, tclValOfVal, valConst = self._packager.serialzeValueToTCL(val)
+                if valConst:
+                    resolve = "immediate"
+                    d.text = tclVal
+                else:
                     # value is simple type and does not contains generic etc...
                     resolve = 'dependent'
-                    d.attrib["spirit:dependency"] = "(%s)" %\
-                        VivadoTclExpressionSerializer.asHdl(val)
-                    d.text = VivadoTclExpressionSerializer.asHdl(
-                        val.staticEval())
-                else:
-                    resolve = "immediate"
-                    d.text = VivadoTclExpressionSerializer.asHdl(val, None)
+                    d.attrib["spirit:dependency"] = "(%s)" % tclVal
+                    d.text = tclValOfVal
                 d.attrib["spirit:resolve"] = resolve
-            mkBoundry("left", self.vector[0])
-            mkBoundry("right", self.vector[1])
+            mkBoundary("left", self.vector[0])
+            mkBoundary("right", self.vector[1])
         td = appendSpiElem(w, "wireTypeDefs")
         td.append(self.type.asElem())
         return e

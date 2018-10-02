@@ -32,6 +32,9 @@ setup(name='ipCorePackager',
       ],
       install_requires=[
       ],
+      tests_require=[
+          "hwtLib", # temporary testsuite
+      ],
       license='MIT',
       packages=find_packages(),
       package_data={'ipCorePackager': []},

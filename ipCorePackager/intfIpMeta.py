@@ -1,20 +1,23 @@
-from typing import List, Dict, Union, Tuple
+from typing import List, Dict, Union
 
 from ipCorePackager.constants import INTF_DIRECTION
 from ipCorePackager.otherXmlObjs import Parameter
 from ipCorePackager.type import Type
 
 
-class IpConfigNotSpecified(Exception):
+class IntfIpMetaNotSpecified(Exception):
     """
-    This error means that you need to implement this function to use this functionality
+    This error means that you need to implement this function
+    to use this functionality
 
-    f.e. you have to implement Simulation agent for interface when you create new one and you can not use existing
+    f.e. you have to implement Simulation agent for interface
+    if you create new one and you can not use existing
     """
     pass
 
 
-class IntfConfigBase(Type):
+class IntfIpMeta(Type):
+
     def __init__(self):
         self.parameters = []
 
@@ -25,7 +28,7 @@ class IntfConfigBase(Type):
         self.quartus_map = None
 
     def _asQuartusTcl(self, buff: List[str], version: str, intfName: str,
-                      component, top, allInterfaces: List['Interface'],
+                      component: "Component", packager: "IpPackager",
                       thisIf: 'Interface', intfMapOrName: Dict[str, Union[Dict, str]]):
         """
         Add interface to Quartus tcl by specified name map
@@ -34,8 +37,7 @@ class IntfConfigBase(Type):
         :param version: Quartus version
         :param intfName: name of top interface
         :param component: component object from ipcore generator
-        :param top: top design instance
-        :param allInterfaces: list of all interfaces of top unit
+        :param packager: instance of IpPackager which is packagin current design
         :param thisIf: interface to add into Quartus TCL
         :param intfMapOrName: Quartus name string for this interface
             or dictionary to map subinterfaces
@@ -43,16 +45,15 @@ class IntfConfigBase(Type):
 
         if isinstance(intfMapOrName, str):
             self.quartus_add_interface_port(
-                buff, intfName, thisIf, intfMapOrName)
+                buff, intfName, thisIf, intfMapOrName, packager)
         else:
             for thisIf_ in thisIf._interfaces:
                 v = intfMapOrName[thisIf_._name]
-                self._asQuartusTcl(buff, version, intfName, component, top,
-                                   allInterfaces, thisIf_, v)
+                self._asQuartusTcl(buff, version, intfName, component,
+                                   packager, thisIf_, v)
 
-    def asQuartusTcl(self, buff: List[str], version: str, component,
-                     top, allInterfaces: List['Interface'],
-                     thisIf: 'Interface'):
+    def asQuartusTcl(self, buff: List[str], version: str, component: "Component",
+                     packager: "IpPackager", thisIf: 'Interface'):
         """
         Add interface to Quartus tcl
 
@@ -60,12 +61,12 @@ class IntfConfigBase(Type):
         :param version: Quartus version
         :param intfName: name of top interface
         :param component: component object from ipcore generator
-        :param top: top design instance
+        :param packager: instance of IpPackager which is packagin current design
         :param allInterfaces: list of all interfaces of top unit
         :param thisIf: interface to add into Quartus TCL
         """
-        name = self.getInterfaceName(thisIf)
-        self.quartus_tcl_add_interface(buff, thisIf)
+        name = packager.getInterfaceLogicalName(thisIf)
+        self.quartus_tcl_add_interface(buff, thisIf, packager)
         clk = thisIf._getAssociatedClk()
         if clk is not None:
             self.quartus_prop(buff, name, "associatedClock",
@@ -81,7 +82,7 @@ class IntfConfigBase(Type):
         else:
             intfMapOrName = thisIf.name
         self._asQuartusTcl(buff, version, name, component,
-                           top, allInterfaces, thisIf, intfMapOrName)
+                           packager, thisIf, intfMapOrName)
 
     def get_quartus_map(self):
         if self.quartus_map is None:
@@ -95,32 +96,38 @@ class IntfConfigBase(Type):
         else:
             return self.quartus_name
 
-    def addSimpleParam(self, interfaceName: str, paramName, value):
+    def addWidthParam(self, thisIntfName, name, value, packager: "IpCorePackager"):
+        _, v_str, v_is_const = packager.serialzeValueToTCL(value, do_eval=True)
+        p = self.addSimpleParam(thisIntfName, name, v_str)
+        if v_is_const:
+            p.value.resolve = "user"
+
+    def addSimpleParam(self, interfaceLogicalName: str, paramName: str, value: str):
         p = Parameter()
         p.name = paramName
         p.value.resolve = "immediate"
-        p.value.id = "BUSIFPARAM_VALUE.%s.%s" % (interfaceName.upper(),
+        p.value.id = "BUSIFPARAM_VALUE.%s.%s" % (interfaceLogicalName.upper(),
                                                  paramName.upper())
         p.value.text = value
         self.parameters.append(p)
         return p
 
-    def postProcess(self, component, entity, allInterfaces, thisIf):
+    def postProcess(self, component, packager, thisIf):
         pass
 
-    def quartus_tcl_add_interface(self, buff, thisIntf):
+    def quartus_tcl_add_interface(self, buff, thisIntf, packager):
         """
         Create interface in Quartus TCL
 
         :return: add_interface command string
         """
-        if self.getthisIntf._direction == INTF_DIRECTION.MASTER:
+        if packager.getInterfaceDirection(thisIntf) == INTF_DIRECTION.MASTER:
             dir_ = "start"
         else:
             dir_ = "end"
 
-        name = self.getInterfaceName(thisIntf)
-        buff.extend(["add_interface %s %s %s" %
+        name = packager.getInterfaceLogicalName(thisIntf)
+        buff.extend(["add_interface %s %s %s" % 
                      (name, self.get_quartus_name(), dir_)])
 
         self.quartus_prop(buff, name, "ENABLED", True)
@@ -147,20 +154,11 @@ class IntfConfigBase(Type):
         else:
             value = str(value)
 
-        buff.append("set_interface_property %s %s %s" %
+        buff.append("set_interface_property %s %s %s" % 
                     (intfName, name, value))
 
-    def addParam(self, thisIntf, name, value):
-        """
-        Add parameter with width of this interface (and interface is signal in this case)
-        """
-        _, width, widthLocked = self.getWidth(thisIntf, value)
-        p = self.addSimpleParam(name, name, width)
-        if not widthLocked:
-            p.value.resolve = "user"
-
     def quartus_add_interface_port(self, buff: List[str], intfName: str, signal,
-                                   logicName: str):
+                                   logicName: str, packager: "IpCorePackager"):
         """
         Add subinterface to Quartus interface
 
@@ -177,29 +175,12 @@ class IntfConfigBase(Type):
         else:
             raise ValueError(d)
 
-        _, width, _ = self.getWidth(signal)
+        _, width, _ = packager.getTypeWidth(packager.getInterfaceType(signal), do_eval=True)
 
         buff.append("add_interface_port %s %s %s %s %s" % (
             intfName,
-            self.getPhysicalName(signal),
+            packager.getInterfacePhysicalName(signal),
             logicName,
             dir_,
             width
         ))
-
-    def getInterfaceName(self, thisIntf):
-        raise NotImplementedError(
-            "Implement this method in your IntfConfig class")
-
-    def getDirection(self, thisIntf) -> INTF_DIRECTION:
-        raise NotImplementedError(
-            "Implement this method in your IntfConfig class")
-
-    def getWidth(self, thisIntf) -> Tuple[int, str, bool]:
-        """
-        :return: tuple (current value of width,
-            string of value (can be ID or int),
-            Flag which specifies if width of signal is locked or can be changed by parameter)
-        """
-        raise NotImplementedError(
-            "Implement this method in your IntfConfig class")
