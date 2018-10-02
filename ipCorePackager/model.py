@@ -58,12 +58,14 @@ class ModelParameter():
         self.value = value
 
     @classmethod
-    def fromGeneric(cls, g, gType, packager):
-        val = packager.paramToIpValue("MODELPARAM_VALUE.", g,
-                             Value.RESOLVE_GENERATED)
+    def fromParam(cls, p, packager):
+        gType = packager.getParamType(p)
+        val = packager.paramToIpValue("MODELPARAM_VALUE.", p,
+                                      Value.RESOLVE_GENERATED)
+        name = packager.getParamPhysicalName(p)
 
-        return cls(g.name,
-                   g.name.replace("_", " "),
+        return cls(name,
+                   name.replace("_", " "),
                    packager.serializeType(gType).lower(),
                    val)
 
@@ -78,8 +80,9 @@ class ModelParameter():
 
 class Model():
 
-    def __init__(self, vhdl_syn_fileSetName, vhdl_sim_fileSetName,
-                 tcl_fileSetName):
+    def __init__(self, packager: "IpPackager",
+                 vhdl_syn_fileSetName, vhdl_sim_fileSetName, tcl_fileSetName):
+        self._packager = packager
         self.views = []
         self.ports = []
         self.modelParameters = []
@@ -124,8 +127,10 @@ class Model():
             v = View.fromElem(v)
             v.modelName = name
             self.views.append(v)
+
+        pack = self._packager
         for p in parameters:
-            mp = ModelParameter.fromGeneric(p)
+            mp = ModelParameter.fromParam(p, pack)
             self.modelParameters.append(mp)
 
     # @classmethod

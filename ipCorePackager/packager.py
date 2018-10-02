@@ -5,14 +5,15 @@ from typing import List, Optional, Union, Tuple
 
 from ipCorePackager.component import Component
 from ipCorePackager.helpers import prettify
-from ipCorePackager.tclGuiBuilder import GuiBuilder,\
+from ipCorePackager.tclGuiBuilder import GuiBuilder, \
     paramManipulatorFns
 from ipCorePackager.uniqList import UniqList
 from ipCorePackager.otherXmlObjs import Value
+from ipCorePackager.constants import INTF_DIRECTION
 
 
 # [TODO] memory maps https://forums.xilinx.com/t5/Embedded-Processor-System-Design/exporting-AXI-BASEADDR-to-xparameters-h-from-Vivado-IP/td-p/428650
-class IpPackager(object):
+class IpCorePackager(object):
     """
     IP-core packager
 
@@ -70,9 +71,10 @@ class IpPackager(object):
         gui = GuiBuilder()
         p0 = gui.page("Main")
         handlers = []
-        for g in self.topUnit._entity.generics:
-            p0.param(g.name)
-            for fn in paramManipulatorFns(g.name):
+        for p in self.iterParams(self.top):
+            name = self.getParamPhysicalName(p)
+            p0.param(name)
+            for fn in paramManipulatorFns(name):
                 handlers.append(fn)
 
         with open(self.guiFile, "w") as f:
@@ -108,7 +110,7 @@ class IpPackager(object):
         self.guiFile = guiFile
         self.mkAutoGui()
 
-        c = Component()
+        c = Component(self)
         c._files = [relpath(p, ip_dir) for p in sorted(self.hdlFiles)] + \
                    [relpath(guiFile, ip_dir)]
 
@@ -119,9 +121,9 @@ class IpPackager(object):
         else:
             c.description = description
 
-        c.asignTopUnit(self.topUnit)
+        c.asignTopUnit(self.top, self.name)
 
-        xml_str = prettify(c.xml())
+        xml_str = prettify(c.ip_xact())
         with open(ip_dir + "component.xml", "w") as f:
             f.write(xml_str)
 
@@ -144,19 +146,71 @@ class IpPackager(object):
         raise NotImplementedError(
             "Implement this function for your hdl types")
 
-    def paramToIpValue(self, idPrefix: str, g: "Param", resolve) -> Value:
+    def getParamPhysicalName(self, p: "Param"):
         raise NotImplementedError(
             "Implement this function for your Param type")
-    
-    def getType(self, intf: "Interface") -> "HdlType":
+
+    def getParamType(self, p: "Param") -> "HdlType":
+        raise NotImplementedError(
+            "Implement this function for your Param type")
+
+    def paramToIpValue(self, idPrefix: str, p: "Param", resolve) -> Value:
+        raise NotImplementedError(
+            "Implement this function for your Param type")
+
+    def iterParams(self, top: "Unit"):
+        raise NotImplementedError(
+            "Implement this function for Top design type")
+
+    def iterInterfaces(self, top: "Unit"):
+        raise NotImplementedError(
+            "Implement this function for Top design type")
+
+    def getInterfaceType(self, intf: "Interface") -> "HdlType":
         raise NotImplementedError(
             "Implement this function for your Param and Interface type")
 
-    def getVectorFromType(self, dtype) -> Union[False, None, Tuple[int, int]]:
+    def getInterfacePhysicalName(self, intf: "Interface"):
+            raise NotImplementedError(
+                "Implement this method in your IntfConfig class")
+
+    def getInterfaceLogicalName(self, intf: "Interface"):
+        raise NotImplementedError(
+            "Implement this function for your Interface type")
+
+    def getVectorFromType(self, dtype: "HdlType") -> Union[bool, None, Tuple[int, int]]:
         """
         :return: None if type has not specific width,
             False if type is just single bit and not a vector
-            [high, low] if type is vector 
+            [high, low] if type is vector
         """
         raise NotImplementedError(
             "Implement this function for your HdlType")
+
+    def getInterfaceDirection(self, thisIntf: "Interface") -> INTF_DIRECTION:
+        raise NotImplementedError(
+            "Implement this method in your IntfConfig class")
+
+    def getTypeWidth(self, dtype: "HdlType", do_eval=False) -> Tuple[int, str, bool]:
+        """
+        :return: tuple (current value of width,
+            string of value (can be ID or int),
+            Flag which specifies if width of signal is locked
+            or can be changed by parameter)
+        """
+        raise NotImplementedError(
+            "Implement this method in your IntfConfig class")
+
+    def getObjDebugName(self, obj: Union["Interface", "Unit", "Param"]) -> str:
+        """
+        Get name of object for debuging purposes
+        """
+        return repr(obj)
+
+    def serialzeValueToTCL(self, val, do_eval=False) -> Tuple[str, str, bool]:
+        """
+        Serialize value to TCL
+
+        :return: tuple (serialized value, serialized evaluated value of value, value is constant flag)
+        """
+        return str(val), str(val), True
