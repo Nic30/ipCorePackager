@@ -32,3 +32,4 @@ The [hwtLib](https://github.com/Nic30/hwtLib) library contains definitions of [I
 ## Similar projects
 
 * [Kactus2](http://funbase.cs.tut.fi) - IP-core packager
+* [Qgen](https://github.com/josyb/Qgen) - Quartus ip core packager for MyHDL
