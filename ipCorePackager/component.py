@@ -156,7 +156,7 @@ class Component():
                 self.registerInterface(i)
         else:
             pack = self._packager
-            name = pack.getInterfaceLogicalName(intf)
+            name = pack.getInterfacePhysicalName(intf)
             d = pack.getInterfaceDirection(intf)
             t = pack.getInterfaceType(intf)
             p = Port.fromParams(name,
