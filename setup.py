@@ -40,4 +40,5 @@ setup(name='ipCorePackager',
       package_data={'ipCorePackager': []},
       include_package_data=True,
       zip_safe=False,
-      test_suite='ipCorePackager.tests.all.suite',)
+      test_suite='ipCorePackager.tests.all.suite',
+)
