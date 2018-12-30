@@ -34,3 +34,4 @@ The [hwtLib](https://github.com/Nic30/hwtLib) library contains definitions of [I
 * [Kactus2](https://github.com/Martoni/kactus2) - IP-core packager
 * [Qgen](https://github.com/josyb/Qgen) - Quartus ip core packager for MyHDL
 * [ipgen](https://github.com/PyHDI/ipgen)
+* [ipxact_gen](https://github.com/olofk/ipxact_gen)
