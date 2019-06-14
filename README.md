@@ -35,3 +35,4 @@ The [hwtLib](https://github.com/Nic30/hwtLib) library contains definitions of [I
 * [Qgen](https://github.com/josyb/Qgen) - Quartus ip core packager for MyHDL
 * [ipgen](https://github.com/PyHDI/ipgen)
 * [ipxact_gen](https://github.com/olofk/ipxact_gen)
+* [ipyxact](https://github.com/olofk/ipyxact) - Python-based IP-XACT parser 
