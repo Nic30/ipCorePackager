@@ -103,16 +103,21 @@ class Parameter():
         if f == "long":
             t = "INTEGER"
             width = 32
+            param_descr = "%s %s %d" % (name, t, width)
         elif f == "bool":
             t = "BOOLEAN"
             width = 1
+            param_descr = "%s %s %d" % (name, t, width)
+        elif f == "string":
+            t = "STRING"
+            param_descr = "%s %s" % (name, t)
         else:
             raise NotImplementedError(f)
 
         val = self.value.text
 
         buff.extend([
-            "add_parameter %s %s %d" % (name, t, width),
+            "add_parameter %s" % param_descr,
             "set_parameter_property %s DEFAULT_VALUE %s" % (name, val),
             "set_parameter_property %s DISPLAY_NAME %s" % (name, name),
             "set_parameter_property %s TYPE %s" % (name, t),
