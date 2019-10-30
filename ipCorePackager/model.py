@@ -1,6 +1,6 @@
 from typing import List
 
-from ipCorePackager.helpers import appendSpiElem,\
+from ipCorePackager.helpers import appendSpiElem, \
     appendStrElements, findS, mkSpiElm, spi_ns_prefix, appendSpiArray
 from ipCorePackager.otherXmlObjs import Value
 import xml.etree.ElementTree as etree
