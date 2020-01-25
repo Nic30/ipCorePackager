@@ -15,6 +15,10 @@ class IntfIpMetaNotSpecified(Exception):
     """
     pass
 
+class VALUE_RESOLVE:
+    IMMEDIATE = "immediate"
+    USER = "user"
+    NONE = None
 
 class IntfIpMeta(Type):
 
@@ -100,12 +104,14 @@ class IntfIpMeta(Type):
         _, v_str, v_is_const = packager.serialzeValueToTCL(value, do_eval=True)
         p = self.addSimpleParam(thisIntfName, name, v_str)
         if v_is_const:
-            p.value.resolve = "user"
+            p.value.resolve = VALUE_RESOLVE.USER
 
-    def addSimpleParam(self, interfaceLogicalName: str, paramName: str, value: str):
+    def addSimpleParam(self, interfaceLogicalName: str, paramName: str, value: str,
+                       resolve= VALUE_RESOLVE.IMMEDIATE):
         p = Parameter()
         p.name = paramName
-        p.value.resolve = "immediate"
+        if resolve is not VALUE_RESOLVE.NONE:
+            p.value.resolve = resolve
         p.value.id = "BUSIFPARAM_VALUE.%s.%s" % (interfaceLogicalName.upper(),
                                                  paramName.upper())
         p.value.text = value
