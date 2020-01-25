@@ -28,8 +28,8 @@ class Value():
 
     def asElem(self):
         e = mkSpiElm("value")
-        appendSpiAtribs(self, e, spi_ns_prefix, reqPropNames=['id', 'resolve'],
-                        optPropNames=['format', 'bitStringLength'])
+        appendSpiAtribs(self, e, spi_ns_prefix, reqPropNames=['id'],
+                        optPropNames=['format', 'bitStringLength', 'resolve'])
 
         e.text = str(self.text)
         return e
@@ -59,20 +59,29 @@ class File():
     @classmethod
     def fromFileName(cls, fileName):
         self = cls()
+        IMPORTED_FILE = "IMPORTED_FILE"
         extDict = {
-            ".vhd": ("vhdlSource", "IMPORTED_FILE"),
+            ".vhd": ("vhdlSource", IMPORTED_FILE),
             ".tcl": ("tclSource", "XGUI_VERSION_2"),
-            ".v":   ("verilogSource", "IMPORTED_FILE")
+            ".v":   ("verilogSource", IMPORTED_FILE),
+            ".xdc": (None, "xdc"),
         }
         fileType = extDict[os.path.splitext(fileName.lower())[1]]
-        self.fileType = fileType[0]
+        if fileType[0] is None:
+            del self.fileType
+        else:
+            self.fileType = fileType[0]
+
         self.userFileType = fileType[1]
         self.name = fileName
         return self
 
     def asElem(self):
         e = mkSpiElm("file")
-        appendStrElements(e, self, self._strValues)
+        appendStrElements(
+            e, self,
+            reqPropNames=[self._strValues[0], ],
+            optPropNames=self._strValues[1:])
         return e
 
 
@@ -130,7 +139,7 @@ class CoreExtensions():
     def __init__(self):
         self.supportedFamilies = {
             "zynq": "Production",
-            "atrix7": "Production",
+            "artix7": "Production",
             "kintex7": "Production",
             "virtex7": "Production"
         }
