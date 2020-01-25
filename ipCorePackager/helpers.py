@@ -47,10 +47,12 @@ def appendStrElements(root, obj, reqPropNames=[], optPropNames=[]):
     for p in reqPropNames:
         e = appendSpiElem(root, p)
         e.text = getattr(obj, p)
+        assert e.text is not None, (obj, p)
     for p in optPropNames:
         if hasattr(obj, p):
             e = appendSpiElem(root, p)
             e.text = getattr(obj, p)
+            assert e.text is not None, (obj, p)
 
 
 def whereEndsWithExt(files, extension):
