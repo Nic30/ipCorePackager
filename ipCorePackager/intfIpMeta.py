@@ -15,10 +15,12 @@ class IntfIpMetaNotSpecified(Exception):
     """
     pass
 
+
 class VALUE_RESOLVE:
     IMMEDIATE = "immediate"
     USER = "user"
     NONE = None
+
 
 class IntfIpMeta(Type):
 
@@ -107,7 +109,7 @@ class IntfIpMeta(Type):
             p.value.resolve = VALUE_RESOLVE.USER
 
     def addSimpleParam(self, interfaceLogicalName: str, paramName: str, value: str,
-                       resolve= VALUE_RESOLVE.IMMEDIATE):
+                       resolve=VALUE_RESOLVE.IMMEDIATE):
         p = Parameter()
         p.name = paramName
         if resolve is not VALUE_RESOLVE.NONE:
