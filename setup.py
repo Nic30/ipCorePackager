@@ -9,7 +9,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='ipCorePackager',
-      version='0.3',
+      version='0.4',
       description='Scriptable universal IP-core generator',
       long_description=long_description,
       long_description_content_type="text/markdown",
