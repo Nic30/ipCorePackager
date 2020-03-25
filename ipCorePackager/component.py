@@ -6,7 +6,7 @@ from ipCorePackager.busInterface import BusInterface
 from ipCorePackager.constants import INTF_DIRECTION
 from ipCorePackager.helpers import appendSpiElem, \
     appendStrElements, mkSpiElm, ns, whereEndsWithExt, whereEndsWithExts
-from ipCorePackager.intfIpMeta import IntfIpMetaNotSpecified
+from ipCorePackager.intfIpMeta import IntfIpMetaNotSpecified, VALUE_RESOLVE
 from ipCorePackager.model import Model
 from ipCorePackager.otherXmlObjs import VendorExtensions, \
     FileSet, File, Parameter, Value
@@ -14,9 +14,10 @@ from ipCorePackager.port import Port
 import xml.etree.ElementTree as etree
 
 
-vhdl_syn_fileSetName = "xilinx_vhdlsynthesis_view_fileset"
-vhdl_sim_fileSetName = "xilinx_vhdlbehavioralsimulation_view_fileset"
+any_syn_fileSetName = "xilinx_anylanguagesynthesis"
+any_sim_fileSetName = "xilinx_anylanguagebehavioralsimulation_view_fileset"
 tcl_fileSetName = "xilinx_xpgui_view_fileset"
+xdc_fileSetName = any_syn_fileSetName
 DEFAULT_QUARTUS_VERSION = "16.1"
 
 
@@ -43,8 +44,10 @@ def tcl_add_fileset_file(filename: str):
     """
     if filename.endswith(".vhd"):
         t = "VHDL"
-    elif filename.endswith(".v") or filename.endswith(".sv"):
+    elif filename.endswith(".v") or filename.endswith(".sv") or filename.endswith(".svh"):
         t = "VERILOG"
+    elif filename.endswith(".xdc"):
+        t = "XDC"
     else:
         raise NotImplementedError(
             "Can not resolve type of file by extension", filename)
@@ -68,8 +71,8 @@ class Component():
         self.name = ""
         self.version = "1.0"
         self.busInterfaces = []
-        self.model = Model(packager, vhdl_syn_fileSetName,
-                           vhdl_sim_fileSetName, tcl_fileSetName)
+        self.model = Model(packager, any_syn_fileSetName,
+                           any_sim_fileSetName, tcl_fileSetName)
         self.fileSets = []
         self.description = ""
         self.parameters = []
@@ -108,13 +111,13 @@ class Component():
             return fileSet
 
         filesets = appendSpiElem(componentElem, "fileSets")
-        hdlExtensions = [".vhd", 'v']
+        hdlExtensions = [".vhd", '.v', '.sv', '.svh', '.xdc']
 
         hdl_fs = fileSetFromFiles(
-            vhdl_syn_fileSetName,
+            any_syn_fileSetName,
             whereEndsWithExts(self._files, hdlExtensions))
         hdl_sim_fs = fileSetFromFiles(
-            vhdl_sim_fileSetName,
+            any_sim_fileSetName,
             whereEndsWithExts(self._files, hdlExtensions))
         tclFileSet = fileSetFromFiles(
             tcl_fileSetName,
@@ -198,7 +201,7 @@ class Component():
         compNameParam.value = Value()
         v = compNameParam.value
         v.id = "PARAM_VALUE.Component_Name"
-        v.resolve = "user"
+        v.resolve = VALUE_RESOLVE.USER
         v.text = self.name
         self.parameters.append(compNameParam)
         # generic as parameters

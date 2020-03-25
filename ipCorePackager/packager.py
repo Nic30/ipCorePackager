@@ -23,23 +23,19 @@ class IpCorePackager(object):
     """
 
     def __init__(self, topObj, name,
-                 extraVhdlFiles: List[str]=[],
-                 extraVerilogFiles: List[str]=[]):
+                 extra_files: List[str]=[]):
         """
         :param topObj: Unit instance of top component
         :param name: name of top
-        :param extraVhdlFiles: list of extra vhdl file names for files
+        :param extra_files: list of extra HDL/constrain file names for files
             which should be distributed in this IP-core
-        :param extraVerilogFiles: same as extraVhdlFiles just for Verilog
+            (*.v - verilog, *.sv,*.svh -system verilog, *.vhd - vhdl, *.xdc - XDC)
         """
         self.top = topObj
         self.name = name
         self.hdlFiles = UniqList()
 
-        for f in extraVhdlFiles:
-            self.hdlFiles.append(f)
-
-        for f in extraVerilogFiles:
+        for f in extra_files:
             self.hdlFiles.append(f)
 
     def saveHdlFiles(self, srcDir):

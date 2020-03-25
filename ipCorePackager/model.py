@@ -81,36 +81,34 @@ class ModelParameter():
 class Model():
 
     def __init__(self, packager: "IpPackager",
-                 vhdl_syn_fileSetName, vhdl_sim_fileSetName, tcl_fileSetName):
+                 any_syn_fileSetName, any_sim_fileSetName, tcl_fileSetName):
         self._packager = packager
         self.views = []
         self.ports = []
         self.modelParameters = []
-        self.vhdl_syn_fileSetName = vhdl_syn_fileSetName
-        self.vhdl_sim_fileSetName = vhdl_sim_fileSetName
+        self.any_syn_fileSetName = any_syn_fileSetName
+        self.any_sim_fileSetName = any_sim_fileSetName
         self.tcl_fileSetName = tcl_fileSetName
 
     def addDefaultViews(self, name: str, parameters: List['Param']):
         viewsTemplate = ("""
 <views xmlns:xilinx="http://www.xilinx.com" xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <spirit:view>
-    <spirit:name>xilinx_vhdlsynthesis</spirit:name>
-    <spirit:displayName>VHDL Synthesis</spirit:displayName>
+    <spirit:name>xilinx_anylanguagesynthesis</spirit:name>
+    <spirit:displayName>Synthesis</spirit:displayName>
     <spirit:envIdentifier>vhdlSource:vivado.xilinx.com:synthesis</spirit:envIdentifier>
-    <spirit:language>vhdl</spirit:language>
     <spirit:modelName>{0}</spirit:modelName>
     <spirit:fileSetRef>
-      <spirit:localName>""" + self.vhdl_syn_fileSetName + """</spirit:localName>
+      <spirit:localName>""" + self.any_syn_fileSetName + """</spirit:localName>
     </spirit:fileSetRef>
   </spirit:view>
   <spirit:view>
-    <spirit:name>xilinx_vhdlbehavioralsimulation</spirit:name>
-    <spirit:displayName>VHDL Simulation</spirit:displayName>
+    <spirit:name>xilinx_anylanguagebehavioralsimulation</spirit:name>
+    <spirit:displayName>Simulation</spirit:displayName>
     <spirit:envIdentifier>vhdlSource:vivado.xilinx.com:simulation</spirit:envIdentifier>
-    <spirit:language>vhdl</spirit:language>
     <spirit:modelName>{0}</spirit:modelName>
     <spirit:fileSetRef>
-      <spirit:localName>""" + self.vhdl_sim_fileSetName + """</spirit:localName>
+      <spirit:localName>""" + self.any_sim_fileSetName + """</spirit:localName>
     </spirit:fileSetRef>
   </spirit:view>
   <spirit:view>
