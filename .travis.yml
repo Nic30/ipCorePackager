@@ -5,7 +5,7 @@ git:
 cache:
   apt: true
 python:
-- '3.7'
+- '3.8'
 install:
 - export PYTHON_VERSION=$(python -c "import sys;v = sys.version_info;print('%d.%d.%d' % (v[0], v[1], v[2]))")
 - export PYTHON_VERSION_SHORT=$(python -c "import sys;v = sys.version_info;print('%d.%d' % (v[0], v[1]))")
