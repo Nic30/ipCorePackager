@@ -1,11 +1,11 @@
-dist: trusty
+dist: focal
 language: python
 git:
   depth: 1
 cache:
   apt: true
 python:
-- '3.6'
+- '3.8'
 install:
 - export PYTHON_VERSION=$(python -c "import sys;v = sys.version_info;print('%d.%d.%d' % (v[0], v[1], v[2]))")
 - export PYTHON_VERSION_SHORT=$(python -c "import sys;v = sys.version_info;print('%d.%d' % (v[0], v[1]))")
@@ -13,11 +13,9 @@ install:
 - python setup.py install
 - cd ..
 - pip install pytest coveralls
-- git clone --depth=1 https://github.com/Nic30/hwt.git
 - git clone --depth=1 https://github.com/Nic30/hwtLib.git
-- cd hwt
-- python setup.py install
-- cd ../hwtLib
+- pip install -r hwtLib/docs/requirements.hwt.txt
+- cd hwtLib
 - python setup.py install
 - cd ../ipCorePackager
 - rm -rf $DIST_PACKAGES/ipCorePackager-*

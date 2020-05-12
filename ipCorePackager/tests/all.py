@@ -3,7 +3,7 @@
 
 from unittest import TestLoader, TextTestRunner, TestSuite
 
-from hwtLib.tests.ipCorePackager_test import IpCorePackagerTC
+from hwtLib.tests.sertialization.ipCorePackager_test import IpCorePackagerTC
 
 
 def testSuiteFromTCs(*tcs):
