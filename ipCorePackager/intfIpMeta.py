@@ -10,7 +10,7 @@ class IntfIpMetaNotSpecified(Exception):
     This error means that you need to implement this function
     to use this functionality
 
-    f.e. you have to implement Simulation agent for interface
+    e.g. you have to implement Simulation agent for interface
     if you create new one and you can not use existing
     """
     pass
@@ -135,7 +135,7 @@ class IntfIpMeta(Type):
             dir_ = "end"
 
         name = packager.getInterfaceLogicalName(thisIntf)
-        buff.extend(["add_interface %s %s %s" % 
+        buff.extend(["add_interface %s %s %s" %
                      (name, self.get_quartus_name(), dir_)])
 
         self.quartus_prop(buff, name, "ENABLED", True)
@@ -162,7 +162,7 @@ class IntfIpMeta(Type):
         else:
             value = str(value)
 
-        buff.append("set_interface_property %s %s %s" % 
+        buff.append("set_interface_property %s %s %s" %
                     (intfName, name, value))
 
     def quartus_add_interface_port(self, buff: List[str], intfName: str, signal,
