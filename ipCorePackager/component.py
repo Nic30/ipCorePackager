@@ -22,7 +22,7 @@ DEFAULT_QUARTUS_VERSION = "16.1"
 
 
 def tcl_comment(s):
-    return "# %s" % s
+    return f"# {s:s}"
 
 
 def tcl_set_module_property(name: str, value, escapeStr=True):
@@ -31,9 +31,9 @@ def tcl_set_module_property(name: str, value, escapeStr=True):
     elif isinstance(value, bool):
         value = str(value).lower()
     else:
-        value = "%r" % value
+        value = repr(value)
 
-    return "set_module_property %s %s" % (name, value)
+    return f"set_module_property {name:s} {value:s}"
 
 
 def tcl_add_fileset_file(filename: str):
@@ -53,7 +53,7 @@ def tcl_add_fileset_file(filename: str):
             "Can not resolve type of file by extension", filename)
     name = basename(filename)
 
-    return "add_fileset_file %s %s PATH %s" % (name, t, filename)
+    return f"add_fileset_file {name:s} {t:s} PATH {filename:s}"
 
 
 class Component():
@@ -224,7 +224,7 @@ class Component():
             quartus_version = DEFAULT_QUARTUS_VERSION
         buff = [
             tcl_comment("module properties"),
-            "package require -exact qsys %s" % quartus_version,
+            f"package require -exact qsys {quartus_version:s}",
             tcl_set_module_property("DESCRIPTION", self.description),
             tcl_set_module_property("NAME", self.name),
             tcl_set_module_property("VERSION", self.version),

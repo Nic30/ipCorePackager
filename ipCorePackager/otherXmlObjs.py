@@ -112,26 +112,26 @@ class Parameter():
         if f == "long":
             t = "INTEGER"
             width = 32
-            param_descr = "%s %s %d" % (name, t, width)
+            param_descr = f"{name:s} {t:s} {width:d}"
         elif f == "bool":
             t = "BOOLEAN"
             width = 1
-            param_descr = "%s %s %d" % (name, t, width)
+            param_descr = f"{name:s} {t:s} {width:d}"
         elif f == "string":
             t = "STRING"
-            param_descr = "%s %s" % (name, t)
+            param_descr = f"{name:s} {t:s}"
         else:
             raise NotImplementedError(f)
 
         val = self.value.text
 
         buff.extend([
-            "add_parameter %s" % param_descr,
-            "set_parameter_property %s DEFAULT_VALUE %s" % (name, val),
-            "set_parameter_property %s DISPLAY_NAME %s" % (name, name),
-            "set_parameter_property %s TYPE %s" % (name, t),
-            "set_parameter_property %s UNITS None" % (name),
-            "set_parameter_property %s HDL_PARAMETER true" % (name),
+            f"add_parameter {param_descr:s}",
+            f"set_parameter_property {name:s} DEFAULT_VALUE {val:s}",
+            f"set_parameter_property {name:s} DISPLAY_NAME {name:s}",
+            f"set_parameter_property {name:s} TYPE {t:s}",
+            f"set_parameter_property {name:s} UNITS None",
+            f"set_parameter_property {name:s} HDL_PARAMETER true",
         ])
 
 

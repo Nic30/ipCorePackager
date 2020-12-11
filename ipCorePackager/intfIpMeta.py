@@ -135,8 +135,8 @@ class IntfIpMeta(Type):
             dir_ = "end"
 
         name = packager.getInterfaceLogicalName(thisIntf)
-        buff.extend(["add_interface %s %s %s" %
-                     (name, self.get_quartus_name(), dir_)])
+        q_name =  self.get_quartus_name()
+        buff.extend([f"add_interface {name:s} {q_name:s} {dir_:s}"])
 
         self.quartus_prop(buff, name, "ENABLED", True)
         self.quartus_prop(buff, name, "EXPORT_OF", "")
@@ -162,8 +162,7 @@ class IntfIpMeta(Type):
         else:
             value = str(value)
 
-        buff.append("set_interface_property %s %s %s" %
-                    (intfName, name, value))
+        buff.append(f"set_interface_property {intfName:s} {name:s} {value:s}")
 
     def quartus_add_interface_port(self, buff: List[str], intfName: str, signal,
                                    logicName: str, packager: "IpCorePackager"):
@@ -185,10 +184,5 @@ class IntfIpMeta(Type):
 
         _, width, _ = packager.getTypeWidth(packager.getInterfaceType(signal), do_eval=True)
 
-        buff.append("add_interface_port %s %s %s %s %s" % (
-            intfName,
-            packager.getInterfacePhysicalName(signal),
-            logicName,
-            dir_,
-            width
-        ))
+        phy_name = packager.getInterfacePhysicalName(signal)
+        buff.append(f"add_interface_port {intfName:s} {phy_name:s} {logicName:s} {dir_:s} {width:s}")

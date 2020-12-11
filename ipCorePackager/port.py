@@ -83,7 +83,7 @@ class Port():
                 else:
                     # value is simple type and does not contains generic etc...
                     resolve = 'dependent'
-                    d.attrib["spirit:dependency"] = "(%s)" % tclVal
+                    d.attrib["spirit:dependency"] = f"({tclVal:s})"
                     d.text = tclValOfVal
                 d.attrib["spirit:resolve"] = resolve
             mkBoundary("left", self.vector[0])
