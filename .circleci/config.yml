@@ -6,6 +6,7 @@ orbs:
 jobs:
   install-and-test:
     executor: python/default
+    resource_class: small
     steps:
       - checkout
       #- python/load-cache
@@ -35,15 +36,6 @@ jobs:
       - run:
           name: Test and coverage
           command: coverage run --source=ipCorePackager -m ipCorePackager.tests.all --with-xunit
-
-      - run:
-          name: Coverage reports 
-          command: |
-              coverage report
-              coverage html
-
-      - store_artifacts:
-          path: htmlcov
 
       - run:
           name: Upload coverage to coveralls.io
