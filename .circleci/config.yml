@@ -45,6 +45,13 @@ jobs:
           command: coveralls
   deploy:
     executor: python/default
+    requires:
+      - build
+    filters:
+      tags:
+        only: /v[0-9]+(\.[0-9]+)*/
+      branches:
+        ignore: /.*/
     steps:
        - run:
           name: Init .pypirc
@@ -60,13 +67,7 @@ jobs:
        - run:
           name: Upload to pypi
           command: twine upload dist/*
-    requires:
-      - build
-    filters:
-      tags:
-        only: /[0-9]+(\.[0-9]+)*/
-      branches:
-        ignore: /.*/
+
 workflows:
   main:
     jobs:
