@@ -15,24 +15,29 @@ jobs:
           command: |
              cd ..
              git clone --depth=1 https://github.com/Nic30/hwtLib.git
-             sudo pip install -r hwtLib/docs/requirements.hwt.txt
+             pip install --user -r hwtLib/docs/requirements.hwt.txt
              cd hwtLib
-             sudo python setup.py install
+             python setup.py install --user
           name: Install tests
 
       - run:
           command: |
             export PYTHON_VERSION=$(python -c "import sys;v = sys.version_info;print('%d.%d.%d' % (v[0], v[1], v[2]))")
             export PYTHON_VERSION_SHORT=$(python -c "import sys;v = sys.version_info;print('%d.%d' % (v[0], v[1]))")
-            DIST_PACKAGES=/usr/local/lib/python$PYTHON_VERSION_SHORT/site-packages
-            sudo rm -rf $DIST_PACKAGES/ipCorePackager-*
-            sudo ln -s ipCorePackager $DIST_PACKAGES/ipCorePackager
+            DIST_PACKAGES=$HOME/.local/lib/python$PYTHON_VERSION_SHORT/site-packages
+            echo "PYTHON_VERSION=$PYTHON_VERSION PYTHON_VERSION_SHORT=$PYTHON_VERSION_SHORT DIST_PACKAGES=$DIST_PACKAGES"
+            rm -rf $DIST_PACKAGES/ipCorePackager-*
+            ln -s ipCorePackager $DIST_PACKAGES/ipCorePackager
           name: Patch file paths for coverage reports
       - python/save-cache
       - run:
           command: coverage run --source=ipCorePackager setup.py test
           name: Test and coverage
-
+      - run:
+          command: |
+              coverage report
+              coverage html
+          name: Coverage reports  
 workflows:
   main:
     jobs:
