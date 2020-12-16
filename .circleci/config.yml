@@ -47,6 +47,7 @@ jobs:
       - run:
           name: Upload coverage to coveralls.io
           command: coveralls
+      - store_test_results
   deploy:
     executor: python/default
     steps:
