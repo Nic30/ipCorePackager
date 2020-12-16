@@ -50,7 +50,7 @@ jobs:
           command: coveralls
 
       - store_test_results:
-          path: tests
+          path: test-reports
 
   deploy:
     executor: python/default
