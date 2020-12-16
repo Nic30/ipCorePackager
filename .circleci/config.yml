@@ -11,17 +11,17 @@ jobs:
       - python/load-cache
       - run: export PYTHON_VERSION=$(python -c "import sys;v = sys.version_info;print('%d.%d.%d' % (v[0], v[1], v[2]))")
       - run: export PYTHON_VERSION_SHORT=$(python -c "import sys;v = sys.version_info;print('%d.%d' % (v[0], v[1]))")
-      - run: DIST_PACKAGES=/home/travis/virtualenv/python$PYTHON_VERSION/lib/python$PYTHON_VERSION_SHORT/site-packages
-      - run: python setup.py install
+      - run: DIST_PACKAGES=/usr/local/lib/python$PYTHON_VERSION_SHORT/site-packages
+      - run: sudo python setup.py install
       - run: cd ..
-      - run: pip install pytest coveralls
+      - run: sudo pip install pytest coveralls
       - run: git clone --depth=1 https://github.com/Nic30/hwtLib.git
-      - run: pip install -r hwtLib/docs/requirements.hwt.txt
+      - run: sudo pip install -r hwtLib/docs/requirements.hwt.txt
       - run: cd hwtLib
-      - run: python setup.py install
+      - run: sudo python setup.py install
       - run: cd ../ipCorePackager
-      - run: rm -rf $DIST_PACKAGES/ipCorePackager-*
-      - run: ln -s ipCorePackager $DIST_PACKAGES/ipCorePackager
+      - run: sudo rm -rf $DIST_PACKAGES/ipCorePackager-*
+      - run: sudo ln -s ipCorePackager $DIST_PACKAGES/ipCorePackager
       - python/save-cache
       - run:
           command: coverage run --source=ipCorePackager setup.py test
