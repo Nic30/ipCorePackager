@@ -199,7 +199,7 @@ class IpCorePackager(object):
 
     def getObjDebugName(self, obj: Union["Interface", "Unit", "Param"]) -> str:
         """
-        Get name of object for debuging purposes
+        Get name of object for debugging purposes
         """
         return repr(obj)
 
