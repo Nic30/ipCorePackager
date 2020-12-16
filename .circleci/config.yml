@@ -37,7 +37,13 @@ jobs:
           command: |
               coverage report
               coverage html
-          name: Coverage reports  
+          name: Coverage reports 
+      - store_artifacts:
+          path: htmlcov
+      - run:
+          command: coveralls
+          name: Upload coverage to coveralls.io
+      
 workflows:
   main:
     jobs:
