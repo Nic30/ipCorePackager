@@ -8,7 +8,7 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
+      #- python/load-cache
       - run: python setup.py install --user
       - run: pip install coveralls twine --user
       - run:
@@ -29,7 +29,7 @@ jobs:
             echo "PYTHON_VERSION=$PYTHON_VERSION PYTHON_VERSION_SHORT=$PYTHON_VERSION_SHORT DIST_PACKAGES=$DIST_PACKAGES"
             rm -rf $DIST_PACKAGES/ipCorePackager-*
             ln -s ipCorePackager $DIST_PACKAGES/ipCorePackager
-      - python/save-cache
+      #- python/save-cache
 
   test:
     executor: python/default
