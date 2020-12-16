@@ -4,7 +4,7 @@ orbs:
   python: circleci/python@0.2.1
 
 jobs:
-  install:
+  install-and-test:
     executor: python/default
     steps:
       - checkout
@@ -30,10 +30,6 @@ jobs:
             rm -rf $DIST_PACKAGES/ipCorePackager-*
             ln -s ipCorePackager $DIST_PACKAGES/ipCorePackager
       #- python/save-cache
-
-  test:
-    executor: python/default
-    steps:
       - run:
           name: Test and coverage
           command: coverage run --source=ipCorePackager setup.py test
@@ -70,13 +66,10 @@ jobs:
 workflows:
   main:
     jobs:
-      - install
-      - test:
-         requires:
-         - install
+      - install-and-test
       - deploy:
          requires:
-           - test
+           - install-and-test
          filters:
            tags:
              only: /v[0-9]+(\.[0-9]+)*/
