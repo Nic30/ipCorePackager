@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
 from unittest import TestLoader, TextTestRunner, TestSuite
 
 from hwtLib.tests.sertialization.ipCorePackager_test import IpCorePackagerTC
@@ -8,10 +9,6 @@ from hwtLib.tests.sertialization.ipCorePackager_test import IpCorePackagerTC
 
 def testSuiteFromTCs(*tcs):
     loader = TestLoader()
-    for tc in tcs:
-        # skip AxiLiteEndpointTC because we need one to test original methods
-        # from SimTestCase
-        tc._multiprocess_can_split_ = True
     loadedTcs = [loader.loadTestsFromTestCase(tc) for tc in tcs]
     suite = TestSuite(loadedTcs)
     return suite
@@ -23,7 +20,12 @@ suite = testSuiteFromTCs(
 
 
 if __name__ == '__main__':
-    runner = TextTestRunner(verbosity=2)
+    if "--with-xunit" in sys.argv:
+        # junit xml output for CI
+        import xmlrunner
+        runner = xmlrunner.XMLTestRunner(output='test-reports')
+    else:
+        runner = TextTestRunner(verbosity=2)
 
     try:
         from concurrencytest import ConcurrentTestSuite, fork_for_tests
@@ -37,4 +39,4 @@ if __name__ == '__main__':
         concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests())
         runner.run(concurrent_suite)
     else:
-        runner.run(suite)
+        sys.exit(not runner.run(suite).wasSuccessful())

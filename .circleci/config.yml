@@ -10,10 +10,11 @@ jobs:
       - checkout
       #- python/load-cache
       - run: python setup.py install --user
-      - run: pip install coverage coveralls twine --user
+
       - run:
           name: Install tests
           command: |
+             pip install coverage coveralls twine xmlrunner --user
              cd ..
              git clone --depth=1 https://github.com/Nic30/hwtLib.git
              pip install --user -r hwtLib/docs/requirements.hwt.txt
@@ -29,22 +30,28 @@ jobs:
             echo "PYTHON_VERSION=$PYTHON_VERSION PYTHON_VERSION_SHORT=$PYTHON_VERSION_SHORT DIST_PACKAGES=$DIST_PACKAGES"
             rm -rf $DIST_PACKAGES/ipCorePackager-*
             ln -s ipCorePackager $DIST_PACKAGES/ipCorePackager
+
       #- python/save-cache
       - run:
           name: Test and coverage
-          command: coverage run --source=ipCorePackager setup.py test
+          command: coverage run --source=ipCorePackager -m ipCorePackager.tests.all --with-xunit
+
       - run:
           name: Coverage reports 
           command: |
               coverage report
               coverage html
+
       - store_artifacts:
           path: htmlcov
+
       - run:
           name: Upload coverage to coveralls.io
           command: coveralls
+
       - store_test_results:
           path: tests
+
   deploy:
     executor: python/default
     steps:
