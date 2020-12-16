@@ -4,7 +4,7 @@ orbs:
   python: circleci/python@0.2.1
 
 jobs:
-  build:
+  install:
     executor: python/default
     steps:
       - checkout
@@ -49,13 +49,6 @@ jobs:
           command: coveralls
   deploy:
     executor: python/default
-    requires:
-      - test
-    filters:
-      tags:
-        only: /v[0-9]+(\.[0-9]+)*/
-      branches:
-        ignore: /.*/
     steps:
        - run:
           name: Init .pypirc
@@ -75,4 +68,15 @@ jobs:
 workflows:
   main:
     jobs:
-      - build-and-test
+      - install
+      - test:
+         requires:
+         - install
+      - deploy:
+         requires:
+           - test
+         filters:
+           tags:
+             only: /v[0-9]+(\.[0-9]+)*/
+           branches:
+             ignore: /.*/
