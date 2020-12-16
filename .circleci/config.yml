@@ -10,7 +10,7 @@ jobs:
       - checkout
       #- python/load-cache
       - run: python setup.py install --user
-      - run: pip install coveralls twine --user
+      - run: pip install coverage coveralls twine --user
       - run:
           name: Install tests
           command: |
