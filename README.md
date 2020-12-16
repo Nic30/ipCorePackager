@@ -1,9 +1,10 @@
 # ipCorePackager
 
 [![Build Status](https://travis-ci.org/Nic30/ipCorePackager.svg?branch=master)](https://travis-ci.org/Nic30/ipCorePackager)
+[![CircleCI](https://circleci.com/gh/nic30/ipCorePackager.svg?style=svg)](https://circleci.com/gh/nic30/ipCorePackager)
 [![Coverage Status](https://coveralls.io/repos/github/Nic30/ipCorePackager/badge.svg?branch=master)](https://coveralls.io/github/Nic30/ipCorePackager?branch=master)
-[![PyPI version](https://badge.fury.io/py/ipCorePackager.svg)](http://badge.fury.io/py/ipCorePackager) 
-[![Documentation Status](https://readthedocs.org/projects/ipCorePackager/badge/?version=latest)](http://ipCorePackager.readthedocs.io/en/latest/?badge=latest) 
+[![PyPI version](https://badge.fury.io/py/ipCorePackager.svg)](http://badge.fury.io/py/ipCorePackager)
+[![Documentation Status](https://readthedocs.org/projects/ipCorePackager/badge/?version=latest)](http://ipCorePackager.readthedocs.io/en/latest/?badge=latest)
 [![Python version](https://img.shields.io/pypi/pyversions/ipCorePackager.svg)](https://img.shields.io/pypi/pyversions/ipCorePackager.svg)
 
 
@@ -25,7 +26,7 @@ IpCorePackager is API for generating of IP-XACT and _hw.tcl files. In order to u
 
 * You need to define methods in [ipCorePackager.packager.IpCorePackager](https://github.com/Nic30/ipCorePackager/blob/master/ipCorePackager/packager.py#L142) which are raising the NotImplementedError. This methods are because ipCorePackager does not dependeds on reprenation of design.
 
-This library is used by [hwt](https://github.com/Nic30/hwt) [there](https://github.com/Nic30/hwt/blob/master/hwt/serializer/ip_packager.py) you can find reference implementation of IpCorePackager methods for hwt style hardware description. 
+This library is used by [hwt](https://github.com/Nic30/hwt) [there](https://github.com/Nic30/hwt/blob/master/hwt/serializer/ip_packager.py) you can find reference implementation of IpCorePackager methods for hwt style hardware description.
 
 The [hwtLib](https://github.com/Nic30/hwtLib) library contains definitions of [IntfIpMeta descriptions](https://github.com/Nic30/hwtLib/blob/master/hwtLib/peripheral/i2c/intf.py#L95) for common interfaces.
 
@@ -35,4 +36,4 @@ The [hwtLib](https://github.com/Nic30/hwtLib) library contains definitions of [I
 * [Qgen](https://github.com/josyb/Qgen) - Quartus ip core packager for MyHDL
 * [ipgen](https://github.com/PyHDI/ipgen)
 * [ipxact_gen](https://github.com/olofk/ipxact_gen)
-* [ipyxact](https://github.com/olofk/ipyxact) - Python-based IP-XACT parser 
+* [ipyxact](https://github.com/olofk/ipyxact) - Python-based IP-XACT parser
