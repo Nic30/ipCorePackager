@@ -29,7 +29,7 @@ class IpCorePackager(object):
         :param name: name of top
         :param extra_files: list of extra HDL/constrain file names for files
             which should be distributed in this IP-core
-            (*.v - verilog, *.sv,*.svh -system verilog, *.vhd - vhdl, *.xdc - XDC)
+            (\*.v - verilog, \*.sv,\*.svh -system verilog, \*.vhd - vhdl, \*.xdc - XDC)
         """
         self.top = topObj
         self.name = name
