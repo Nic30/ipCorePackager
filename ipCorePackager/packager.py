@@ -25,7 +25,7 @@ class IpCorePackager(object):
     def __init__(self, topObj, name,
                  extra_files: List[str]=[]):
         """
-        :param topObj: Unit instance of top component
+        :param topObj: top component (type depends on user)
         :param name: name of top
         :param extra_files: list of extra HDL/constrain file names for files
             which should be distributed in this IP-core
