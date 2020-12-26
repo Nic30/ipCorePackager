@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@0.2.1
+  py: nic30/python-all-in-1
 
 jobs:
   install-and-test:
@@ -9,58 +10,18 @@ jobs:
     resource_class: small
     steps:
       - checkout
-      #- python/load-cache
-      - run: python setup.py install --user
-
-      - run:
-          name: Install tests
-          command: |
-             pip install coverage coveralls twine xmlrunner --user
-             cd ..
-             git clone --depth=1 https://github.com/Nic30/hwtLib.git
-             pip install --user -r hwtLib/doc/requirements.txt
-             cd hwtLib
-             python setup.py install --user
-
-      - run:
-          name: Patch file paths for coverage reports
-          command: |
-            export PYTHON_VERSION=$(python -c "import sys;v = sys.version_info;print('%d.%d.%d' % (v[0], v[1], v[2]))")
-            export PYTHON_VERSION_SHORT=$(python -c "import sys;v = sys.version_info;print('%d.%d' % (v[0], v[1]))")
-            DIST_PACKAGES=$HOME/.local/lib/python$PYTHON_VERSION_SHORT/site-packages
-            echo "PYTHON_VERSION=$PYTHON_VERSION PYTHON_VERSION_SHORT=$PYTHON_VERSION_SHORT DIST_PACKAGES=$DIST_PACKAGES"
-            rm -rf $DIST_PACKAGES/ipCorePackager-*
-            ln -s ipCorePackager $DIST_PACKAGES/ipCorePackager
-
-      #- python/save-cache
-      - run:
-          name: Test and coverage
-          command: coverage run --source=ipCorePackager -m ipCorePackager.tests.all --with-xunit
-
-      - run:
-          name: Upload coverage to coveralls.io
-          command: coveralls
-
-      - store_test_results:
-          path: test-reports
+      # - python/load-cache
+      - py/install-package-git:
+          cwd: ..
+          url: https://github.com/Nic30/hwtLib
+      - py/install-setup-py
+      # - python/save-cache
+      - py/test-and-coverage
 
   deploy:
     executor: python/default
     steps:
-       - run:
-          name: Init .pypirc
-          command: |
-            echo -e "[pypi]" >> ~/.pypirc
-            echo -e "username = nic30" >> ~/.pypirc
-            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-       - run:
-          name: Make packages
-          command: |
-            python setup.py sdist
-            python setup.py bdist_wheel
-       - run:
-          name: Upload to pypi
-          command: twine upload dist/*
+      - py/deploy-pypi
 
 workflows:
   main:
