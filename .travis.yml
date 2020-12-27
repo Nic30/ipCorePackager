@@ -21,7 +21,7 @@ install:
 - rm -rf $DIST_PACKAGES/ipCorePackager-*
 - ln -s ipCorePackager $DIST_PACKAGES/ipCorePackager
 script:
-- coverage run --source=ipCorePackager setup.py test
+- coverage run --source=ipCorePackager -m tests.all
 deploy:
   provider: pypi
   user: nic30
