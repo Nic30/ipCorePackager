@@ -40,6 +40,6 @@ setup(name='ipCorePackager',
       packages=find_packages(),
       package_data={'ipCorePackager': []},
       include_package_data=True,
-      zip_safe=False,
+      zip_safe=True,
       test_suite='ipCorePackager.tests.all.suite',
 )
