@@ -18,7 +18,6 @@ suite = testSuiteFromTCs(
     IpCorePackagerTC
 )
 
-
 if __name__ == '__main__':
     if "--with-xunit" in sys.argv:
         # junit xml output for CI
