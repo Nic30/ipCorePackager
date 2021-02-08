@@ -4,7 +4,7 @@
 import sys
 from unittest import TestLoader, TextTestRunner, TestSuite
 
-from hwtLib.tests.sertialization.ipCorePackager_test import IpCorePackagerTC
+from hwtLib.tests.serialization.ipCorePackager_test import IpCorePackagerTC
 
 
 def testSuiteFromTCs(*tcs):
