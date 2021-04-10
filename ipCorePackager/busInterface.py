@@ -42,7 +42,7 @@ class BusInterface():
         def processIntf(mapDict, intf):
             if not intf._interfaces:
                 assert(isinstance(mapDict, str))
-                return {mapDict: intf._getPhysicalName()}
+                return {mapDict: intf._getHdlName()}
             else:
                 d = {}
                 logicName = packager.getInterfaceLogicalName
