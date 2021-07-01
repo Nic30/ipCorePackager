@@ -9,7 +9,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='ipCorePackager',
-      version='0.5',
+      version='0.6',
       description='Scriptable universal IP-core generator',
       long_description=long_description,
       long_description_content_type="text/markdown",
@@ -41,5 +41,4 @@ setup(name='ipCorePackager',
       package_data={'ipCorePackager': []},
       include_package_data=True,
       zip_safe=True,
-      test_suite='ipCorePackager.tests.all.suite',
 )
