@@ -9,13 +9,16 @@
 
 Scriptable universal IP-Core generator
 
+
 ## Export formats
 * [IP-XACT](https://en.wikipedia.org/wiki/IP-XACT) (Vivado)
 * Quartus (QSys) *_hw.tcl
 
+
 ## What is IP-Core packager.
 
 IP-Core packager is a tool which generates component.xml or _hw.tcl files which are description of interface of hardware design usually written in Verilog or VHDL. Result is the package with HDL (Verilog/VHDL) files, constraints files (XDC, UCF, ...) tcl based GUI and package description file. IP-Core packages greatly simplifies integration of hardware projects, all major synthesis tools (Xilinx Vivado, Intel Quartus, ...) are supporting them directly and for rest it is better to have IP-Core because of consystency.
+
 
 ## How to use IpCorePackager
 
@@ -28,6 +31,7 @@ IpCorePackager is API for generating of IP-XACT and _hw.tcl files. In order to u
 This library is used by [hwt](https://github.com/Nic30/hwt) [there](https://github.com/Nic30/hwt/blob/master/hwt/serializer/ip_packager.py) you can find reference implementation of IpCorePackager methods for hwt style hardware description.
 
 The [hwtLib](https://github.com/Nic30/hwtLib) library contains definitions of [IntfIpMeta descriptions](https://github.com/Nic30/hwtLib/blob/master/hwtLib/peripheral/i2c/intf.py#L95) for common interfaces.
+
 
 ## Similar projects
 
