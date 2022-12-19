@@ -40,3 +40,4 @@ The [hwtLib](https://github.com/Nic30/hwtLib) library contains definitions of [I
 * [ipgen](https://github.com/PyHDI/ipgen)
 * [ipxact_gen](https://github.com/olofk/ipxact_gen)
 * [ipyxact](https://github.com/olofk/ipyxact) - Python-based IP-XACT parser
+* [PeakRDL-regblock](https://github.com/SystemRDL/PeakRDL-regblock) - Python, control & status register (CSR) toolchain, suports IP-XACT
