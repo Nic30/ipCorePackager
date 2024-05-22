@@ -6,7 +6,7 @@ from ipCorePackager.busInterface import BusInterface
 from ipCorePackager.constants import INTF_DIRECTION
 from ipCorePackager.helpers import appendSpiElem, \
     appendStrElements, mkSpiElm, ns, whereEndsWithExt, whereEndsWithExts
-from ipCorePackager.intfIpMeta import IntfIpMetaNotSpecified, VALUE_RESOLVE
+from ipCorePackager.intfIpMeta import IntfIpMetaNotSpecifiedError, VALUE_RESOLVE
 from ipCorePackager.model import Model
 from ipCorePackager.otherXmlObjs import VendorExtensions, \
     FileSet, File, Parameter, Value
@@ -154,22 +154,22 @@ class Component():
 
         return c
 
-    def registerInterface(self, intf: 'Interface'):
-        if intf._interfaces:
-            for i in intf._interfaces:
-                self.registerInterface(i)
+    def registerHwIO(self, hwIO: 'HwIO'):
+        if hwIO._hwIOs:
+            for cHwIO in hwIO._hwIOs:
+                self.registerHwIO(cHwIO)
         else:
             pack = self._packager
-            name = pack.getInterfacePhysicalName(intf)
-            d = pack.getInterfaceDirection(intf)
-            t = pack.getInterfaceType(intf)
+            name = pack.getInterfacePhysicalName(hwIO)
+            d = pack.getInterfaceDirection(hwIO)
+            t = pack.getInterfaceType(hwIO)
             p = Port.fromParams(name,
                                 INTF_DIRECTION.asDirection(d),
                                 t,
                                 pack)
             self.model.ports.append(p)
 
-    def asignTopUnit(self, top, topName):
+    def asignTopHwModule(self, top: "HwModule", topName: str):
         """
         Set hwt unit as template for component
         """
@@ -179,7 +179,7 @@ class Component():
         self.model.addDefaultViews(topName, pack.iterParams(top))
 
         for intf in pack.iterInterfaces(self._top):
-            self.registerInterface(intf)
+            self.registerHwIO(intf)
             if intf._isExtern:
                 self.busInterfaces.append(intf)
 
@@ -188,7 +188,7 @@ class Component():
             biClass = None
             try:
                 biClass = intf._getIpCoreIntfClass()
-            except IntfIpMetaNotSpecified:
+            except IntfIpMetaNotSpecifiedError:
                 pass
             if biClass is not None:
                 bi = BusInterface.fromBiClass(intf, biClass, self._packager)

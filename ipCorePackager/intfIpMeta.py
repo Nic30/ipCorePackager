@@ -5,7 +5,7 @@ from ipCorePackager.otherXmlObjs import Parameter
 from ipCorePackager.type import Type
 
 
-class IntfIpMetaNotSpecified(Exception):
+class IntfIpMetaNotSpecifiedError(Exception):
     """
     This error means that you need to implement this function
     to use this functionality
@@ -35,7 +35,7 @@ class IntfIpMeta(Type):
 
     def _asQuartusTcl(self, buff: List[str], version: str, intfName: str,
                       component: "Component", packager: "IpPackager",
-                      thisIf: 'Interface', intfMapOrName: Dict[str, Union[Dict, str]]):
+                      thisIf: 'HwIO', intfMapOrName: Dict[str, Union[Dict, str]]):
         """
         Add interface to Quartus tcl by specified name map
 
@@ -43,23 +43,23 @@ class IntfIpMeta(Type):
         :param version: Quartus version
         :param intfName: name of top interface
         :param component: component object from ipcore generator
-        :param packager: instance of IpPackager which is packagin current design
+        :param packager: instance of IpPackager which is packaging current design
         :param thisIf: interface to add into Quartus TCL
         :param intfMapOrName: Quartus name string for this interface
-            or dictionary to map subinterfaces
+            or dictionary to map child HwIO instances
         """
 
         if isinstance(intfMapOrName, str):
             self.quartus_add_interface_port(
                 buff, intfName, thisIf, intfMapOrName, packager)
         else:
-            for thisIf_ in thisIf._interfaces:
+            for thisIf_ in thisIf._hwIOs:
                 v = intfMapOrName[thisIf_._name]
                 self._asQuartusTcl(buff, version, intfName, component,
                                    packager, thisIf_, v)
 
     def asQuartusTcl(self, buff: List[str], version: str, component: "Component",
-                     packager: "IpPackager", thisIf: 'Interface'):
+                     packager: "IpPackager", thisIf: 'HwIO'):
         """
         Add interface to Quartus tcl
 
@@ -67,7 +67,7 @@ class IntfIpMeta(Type):
         :param version: Quartus version
         :param intfName: name of top interface
         :param component: component object from ipcore generator
-        :param packager: instance of IpPackager which is packagin current design
+        :param packager: instance of IpPackager which is packaging current design
         :param allInterfaces: list of all interfaces of top unit
         :param thisIf: interface to add into Quartus TCL
         """
@@ -102,7 +102,7 @@ class IntfIpMeta(Type):
         else:
             return self.quartus_name
 
-    def addWidthParam(self, thisIntfName, name, value, packager: "IpCorePackager"):
+    def addWidthParam(self, thisIntfName: str, name: str, value, packager: "IpCorePackager"):
         _, v_str, v_is_const = packager.serialzeValueToTCL(value, do_eval=True)
         p = self.addSimpleParam(thisIntfName, name, v_str)
         if v_is_const:

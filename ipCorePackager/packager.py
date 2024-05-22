@@ -7,7 +7,7 @@ from ipCorePackager.component import Component
 from ipCorePackager.helpers import prettify
 from ipCorePackager.tclGuiBuilder import GuiBuilder, \
     paramManipulatorFns
-from ipCorePackager.uniqList import UniqList
+from ipCorePackager.setList import SetList
 from ipCorePackager.otherXmlObjs import Value
 from ipCorePackager.constants import INTF_DIRECTION
 
@@ -33,7 +33,7 @@ class IpCorePackager(object):
         """
         self.top = topObj
         self.name = name
-        self.hdlFiles = UniqList()
+        self.hdlFiles = SetList()
 
         for f in extra_files:
             self.hdlFiles.append(f)
@@ -117,7 +117,7 @@ class IpCorePackager(object):
         else:
             c.description = description
 
-        c.asignTopUnit(self.top, self.name)
+        c.asignTopHwModule(self.top, self.name)
 
         xml_str = prettify(c.ip_xact())
         with open(ip_dir + "component.xml", "w") as f:
@@ -129,11 +129,11 @@ class IpCorePackager(object):
 
     def toHdlConversion(self, top, topName: str, saveTo: str) -> List[str]:
         """
-        :param top: object which is represenation of design
+        :param top: object which is representation of design
         :param topName: name which should be used for ipcore
         :param saveTo: path of directory where generated files should be stored
 
-        :return: list of file namens in correct compile order
+        :return: list of file names in correct compile order
         """
         raise NotImplementedError(
             "Implement this function for your type of your top module")
@@ -142,35 +142,35 @@ class IpCorePackager(object):
         raise NotImplementedError(
             "Implement this function for your hdl types")
 
-    def getParamPhysicalName(self, p: "Param"):
+    def getParamPhysicalName(self, p: "HwParam"):
         raise NotImplementedError(
             "Implement this function for your Param type")
 
-    def getParamType(self, p: "Param") -> "HdlType":
+    def getParamType(self, p: "HwParam") -> "HdlType":
         raise NotImplementedError(
-            "Implement this function for your Param type")
+            "Implement this function for your HwParam type")
 
-    def paramToIpValue(self, idPrefix: str, p: "Param", resolve) -> Value:
+    def paramToIpValue(self, idPrefix: str, p: "HwParam", resolve) -> Value:
         raise NotImplementedError(
-            "Implement this function for your Param type")
+            "Implement this function for your HwParam type")
 
-    def iterParams(self, top: "Unit"):
+    def iterParams(self, top: "HwModule"):
         raise NotImplementedError(
             "Implement this function for Top design type")
 
-    def iterInterfaces(self, top: "Unit"):
+    def iterInterfaces(self, top: "HwModule"):
         raise NotImplementedError(
             "Implement this function for Top design type")
 
-    def getInterfaceType(self, intf: "Interface") -> "HdlType":
+    def getInterfaceType(self, hwIO: "HwIO") -> "HdlType":
         raise NotImplementedError(
-            "Implement this function for your Param and Interface type")
+            "Implement this function for your HwParam and HwIO type")
 
-    def getInterfacePhysicalName(self, intf: "Interface"):
+    def getInterfacePhysicalName(self, hwIO: "HwIO"):
             raise NotImplementedError(
-                "Implement this method in your Interface class")
+                "Implement this method in your HwIO class")
 
-    def getInterfaceLogicalName(self, intf: "Interface"):
+    def getInterfaceLogicalName(self, hwIO: "Interface"):
         raise NotImplementedError(
             "Implement this function for your Interface type")
 
@@ -183,7 +183,7 @@ class IpCorePackager(object):
         raise NotImplementedError(
             "Implement this function for your HdlType")
 
-    def getInterfaceDirection(self, thisIntf: "Interface") -> INTF_DIRECTION:
+    def getInterfaceDirection(self, thisHwIO: "Interface") -> INTF_DIRECTION:
         raise NotImplementedError(
             "Implement this method in your Interface class")
 
@@ -197,7 +197,7 @@ class IpCorePackager(object):
         raise NotImplementedError(
             "Implement this method in your HdlType classes")
 
-    def getObjDebugName(self, obj: Union["Interface", "Unit", "Param"]) -> str:
+    def getObjDebugName(self, obj: Union["Interface", "HwModule", "HwParam"]) -> str:
         """
         Get name of object for debugging purposes
         """

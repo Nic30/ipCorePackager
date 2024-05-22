@@ -1,12 +1,12 @@
 
 
-class UniqList(list):
+class SetList(list):
     """
     List of unique items
     """
 
     def __init__(self, initSeq=None):
-        super(UniqList, self).__init__()
+        super(SetList, self).__init__()
         self.__s = set()
         if initSeq is not None:
             for item in initSeq:
@@ -25,7 +25,7 @@ class UniqList(list):
             self.append(item)
 
     def insert(self, i, x):
-        super(UniqList, self).insert(i, x)
+        super(SetList, self).insert(i, x)
         self.__s.add(x)
 
     def _get_set(self):
@@ -55,7 +55,7 @@ class UniqList(list):
         self.__s.clear()
 
     def copy(self):
-        c = UniqList()
+        c = SetList()
         c.extend(self)
         return c
 

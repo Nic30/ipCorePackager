@@ -1,8 +1,9 @@
-from ipCorePackager.helpers import appendSpiElem, mkSpiElm
 from ipCorePackager.constants import INTF_DIRECTION
+from ipCorePackager.helpers import appendSpiElem, mkSpiElm
 
 
 class BusInterface():
+
     def __init__(self):
         self.name = None
         self.busType = None
@@ -39,14 +40,15 @@ class BusInterface():
 
     @staticmethod
     def generatePortMap(biType, intf, packager: "IpCorePackager"):
+
         def processIntf(mapDict, intf):
-            if not intf._interfaces:
+            if not intf._hwIOs:
                 assert(isinstance(mapDict, str))
                 return {mapDict: intf._getHdlName()}
             else:
                 d = {}
                 logicName = packager.getInterfaceLogicalName
-                for i in intf._interfaces:
+                for i in intf._hwIOs:
                     if i._isExtern:
                         n = logicName(i)
                         try:
@@ -59,6 +61,7 @@ class BusInterface():
 
                         d.update(processIntf(m, i))
                 return d
+
         return processIntf(biType.map, intf)
 
     @classmethod
@@ -75,6 +78,7 @@ class BusInterface():
         return self
 
     def asElem(self):
+
         def mkPortMap(logicalName, physicalName):
             pm = mkSpiElm("portMap")
             appendSpiElem(appendSpiElem(pm, "logicalPort"),
