@@ -76,17 +76,17 @@ class IntfIpMeta(Type):
         clk = thisIf._getAssociatedClk()
         if clk is not None:
             self.quartus_prop(buff, name, "associatedClock",
-                              clk._sigInside.name, escapeStr=False)
+                              clk._sigInside._name, escapeStr=False)
         rst = thisIf._getAssociatedRst()
         if rst is not None:
             self.quartus_prop(buff, name, "associatedReset",
-                              rst._sigInside.name, escapeStr=False)
+                              rst._sigInside._name, escapeStr=False)
 
         m = self.get_quartus_map()
         if m:
             intfMapOrName = m
         else:
-            intfMapOrName = thisIf.name
+            intfMapOrName = thisIf._name
         self._asQuartusTcl(buff, version, name, component,
                            packager, thisIf, intfMapOrName)
 

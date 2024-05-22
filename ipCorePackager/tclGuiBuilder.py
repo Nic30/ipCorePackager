@@ -30,7 +30,7 @@ class GuiPage(TclObj):
         params = []
         for n in self.__slots__:
             p = getattr(self, n, None)
-            if p:
+            if p is not None:
                 if issubclass(p.__class__, TclObj):
                     s = '-%s ${%s}' % (n, p.name)
                 else:
