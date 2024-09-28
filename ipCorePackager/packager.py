@@ -4,12 +4,12 @@ import shutil
 from typing import List, Optional, Union, Tuple
 
 from ipCorePackager.component import Component
+from ipCorePackager.constants import INTF_DIRECTION
 from ipCorePackager.helpers import prettify
+from ipCorePackager.otherXmlObjs import Value
+from ipCorePackager.setList import SetList
 from ipCorePackager.tclGuiBuilder import GuiBuilder, \
     paramManipulatorFns
-from ipCorePackager.setList import SetList
-from ipCorePackager.otherXmlObjs import Value
-from ipCorePackager.constants import INTF_DIRECTION
 
 
 # [TODO] memory maps https://forums.xilinx.com/t5/Embedded-Processor-System-Design/exporting-AXI-BASEADDR-to-xparameters-h-from-Vivado-IP/td-p/428650
@@ -29,7 +29,7 @@ class IpCorePackager(object):
         :param name: name of top
         :param extra_files: list of extra HDL/constrain file names for files
             which should be distributed in this IP-core
-            (\*.v - verilog, \*.sv,\*.svh -system verilog, \*.vhd - vhdl, \*.xdc - XDC)
+            (\\*.v - verilog, \\*.sv,\\*.svh -system verilog, \\*.vhd - vhdl, \\*.xdc - XDC)
         """
         self.top = topObj
         self.name = name
