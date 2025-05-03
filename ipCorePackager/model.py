@@ -91,6 +91,9 @@ class Model():
         self.tcl_fileSetName = tcl_fileSetName
 
     def addDefaultViews(self, name: str, parameters: List['Param']):
+        # https://adaptivesupport.amd.com/s/question/0D52E00006hpUquSAE/create-custom-ip-vhdl2008
+        # https://adaptivesupport.amd.com/s/question/0D52E00006iHl8JSAS/issue-packaging-a-vhdl-2008-ip-in-vivado-20162
+        # https://adaptivesupport.amd.com/s/article/68737?language=en_US
         viewsTemplate = ("""
 <views xmlns:xilinx="http://www.xilinx.com" xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <spirit:view>
