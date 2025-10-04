@@ -21,6 +21,9 @@ class SetList(list):
             return True
 
     def extend(self, items):
+        if self is items:
+            return  # will not add any item because all items are already there
+
         for item in items:
             self.append(item)
 
@@ -58,6 +61,9 @@ class SetList(list):
         c = SetList()
         c.extend(self)
         return c
+
+    def __setitem__(self, key, value) -> None:
+        raise NotImplementedError()
 
     def __copy__(self):
         return self.copy()
