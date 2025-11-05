@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ipCorePackager"
+version = "0.6"
+dependencies = []
+requires-python = ">=3.8"
+authors = [
+  {name = "Michal Orsak", email = "Nic30original@gmail.com"},
+]
+
+description = "Scriptable universal IP-core generator"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = [
+ 'hdl', 'vhdl', 'verilog', 'systemverilog',
+ 'ip-core', 'ip-xact', ]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.6",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+  "Topic :: System :: Hardware",
+  "Topic :: Utilities"
+]
+
+
+[project.urls]
+Homepage = "https://github.com/Nic30/ipCorePackager"
+Documentation = "https://ipCorePackager.readthedocs.io/en/latest/?badge=latest"
+Repository = "https://github.com/Nic30/ipCorePackager.git"
+"Bug Tracker" = "https://github.com/Nic30/ipCorePackager/issues"
