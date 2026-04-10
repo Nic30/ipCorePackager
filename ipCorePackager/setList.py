@@ -45,8 +45,10 @@ class SetList(list):
             return False
 
     def remove(self, item):
+        # To raise ValueError instead of KeyError for set
+        res = list.remove(self, item)
         self.__s.remove(item)
-        return list.remove(self, item)
+        return res
 
     def pop(self, *args, **kwargs):
         item = list.pop(self, *args, **kwargs)
