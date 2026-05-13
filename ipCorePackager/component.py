@@ -239,7 +239,7 @@ class Component():
             tcl_set_module_property("ALLOW_GREYBOX_GENERATION", False),
             tcl_set_module_property("REPORT_HIERARCHY", False),
         ]
-
+        # https://docs.altera.com/r/docs/683364/18.1/intel-quartus-prime-standard-edition-user-guide-platform-designer/control-file-generation-dynamically-with-parameters-and-a-fileset-callback
         buff.extend([
             'add_fileset QUARTUS_SYNTH QUARTUS_SYNTH "" ""',
             'set_fileset_property QUARTUS_SYNTH TOP_LEVEL %s' % self.name,
