@@ -72,3 +72,7 @@ class SetList(list):
 
     def __contains__(self, key):
         return key in self.__s
+
+    def __repr__(self) -> str:
+        s = super().__repr__()
+        return f"{self.__class__.__name__:s}({s:s})"
